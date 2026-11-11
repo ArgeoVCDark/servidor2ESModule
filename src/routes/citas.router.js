@@ -22,21 +22,21 @@ export default function (pool) {
  */
 
 /*Solo contiene las rutas */
-import Router from "express";
+
+import { Router } from "express";
 import {
-    obtenerCitas,
+    obtenerCita,
     crearCita,
-    obtenerCitaId,
+    obteberCitaId,
+    actualizarCitaFull,
     actualizarCita,
     eliminarCita
 } from "../controller/citas.controller.js";
-import { validarCaptcha } from "../../seguridad.js";
-import { validarCitaConLibreria } from "citas.router.js";
 
 const router = Router();
 
 export default function (pool) {
-    router.get("/api", obtenerCitas(pool));
+    router.get("/api", obtenerCitas(pol));
     router.post(
         "/api",
         validarCaptcha,
@@ -44,7 +44,9 @@ export default function (pool) {
         crearCita(pool)
     );
     router.get("/api", obtenerCitaId(pool));
-    router.patch("/api", validarCitaConLibreria(pool), actualizarCita(pool));
+    router.patch("api", validarCitaConLibreria(pool), actualizarCita(pool));
+    router.put("/api", validarCitaConLibreria(pool), actualizarCitaFull(pool));
     router.delete("/api", eliminarCita(pool));
+
     return router;
 }

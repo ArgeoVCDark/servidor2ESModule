@@ -87,3 +87,4 @@ SHOW TABLES;
 ALTER TABLE citas MODIFY id_empleado int null;
 
 SHOW TABLES;
+INSERT INTO citas VALUES ('fernado', 'fernandez', '9621234567', 'fernando01@gmail.com')

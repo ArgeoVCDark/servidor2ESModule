@@ -71,15 +71,16 @@ import { fileURLToPath } from "url";
 import mysql from "mysql2/promise";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { citasRoutes } from "./citas.route";
+import { validarCaptcha } from "./../../../seguridad.js";
+import { validarCitaConLibreria } from "./../../../validarConLibreria.js";
 
-const app = express();
-const express = express();
+const app = xpress();
+const port = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const pool = createPool({
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
@@ -96,29 +97,32 @@ const limitador = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: {
-        datos: [
+        error: [
             {
                 campo: "general",
-                mensaje: "Demasiados intentos de esta IP, intenta mas tarde."
+                mensaje: "Demasiados intendtos de esta IP. Intente mas tarde"
             }
         ]
     }
 });
-
 app.use("/api/", limitador);
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname, "public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.join());
 
-app.get("/api", citasRoutes(pool));
+app.get("/api", citasRouters(pool));
 
 app.use((req, res) => {
-    res.status(404).sed("<h1>404-Pagina no encontrada</h1>");
+    res.status(404).send("<h1>404-Pagina no encontrada</h1>");
 });
-app.use((err, req, res, next) => {
-    console.error("Errorr atrapado en el middlewareglobal.", err);
+
+app.use((err, res, req, next) => {
+    console.error("Error capturado en middleware global", err);
+    res.status(500).json({
+        ok: false,
+        mensaje: "Error intenno, intente mas tarde"
+    });
 });
-app.liaten(port, () => {
-    console.log("Servidor CRUD activado en http://localhost:${id}");
-});
+
+app.listen(port, `Servidor CRUD activado en http://localhost:${port}`);
